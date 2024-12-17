@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { sendToProcessingQueue } from '../amqp';
 import { audioPublicDomain, tempPath } from '../config';
 import { NotFoundError } from '../errors';
 import { deleteDirectory, uploadFile } from '../files/files.repository';
@@ -33,12 +34,10 @@ export async function createRecordService(
 	data: CreateRecordDTO,
 ) {
 	const createdModel = await createRecord({
-		duration: data.duration,
+		duration: +data.duration,
 	});
 
 	const tempRecordingPath = `temp/${createdModel.id}.wav`;
-
-	console.log(tempRecordingPath, file);
 
 	await uploadFile(tempRecordingPath, file.path, {
 		ContentType: file.mimetype,
@@ -46,8 +45,7 @@ export async function createRecordService(
 
 	await fs.unlink(file.path);
 
-	//TODO: Send processing message to Queue
-	//sendToProcessingQueue(createdModel.id);
+	sendToProcessingQueue(createdModel.id);
 
 	return createdModel;
 }

@@ -1,5 +1,5 @@
 export interface CreateRecordDTO {
-	duration: number;
+	duration: string;
 }
 
 export interface UpdateRecordDTO {
