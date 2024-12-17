@@ -1,4 +1,5 @@
 import os from 'node:os';
+import type { Options as MulterOptions } from 'multer';
 
 export const isDev = process.env.NODE_ENV !== 'production';
 
@@ -14,3 +15,7 @@ export const s3AccessKeyId = process.env.AWS_ACCESS_KEY_ID as string;
 export const s3SecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY as string;
 
 export const redisUrl = process.env.REDIS_URL as string;
+
+export const fileUploadConfig: MulterOptions = {
+	dest: tempPath,
+};

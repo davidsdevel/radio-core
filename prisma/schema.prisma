@@ -20,11 +20,11 @@ model Record {
   date          DateTime		@default(now())
   duration      Int				@default(0)//Duration in secs
   path          String?			@unique
-  status        RecordStatus 	@default(RECORDING)
+  status        RecordStatus 	@default(PROCESSING)
 }
 
 enum RecordStatus {
   DRAFT
   PUBLISHED
-  RECORDING
+  PROCESSING
 }

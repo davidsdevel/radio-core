@@ -1,10 +1,11 @@
 import type { NextFunction, Request, Response } from 'express';
 
 export interface ControllerData {
-	query?: Record<string, any>;
-	body?: Record<string, any>;
-	params?: Record<string, any>;
+	query: Record<string, any>;
+	body: Record<string, any>;
+	params: Record<string, any>;
 	path: string;
+	file: Express.Multer.File | undefined;
 }
 
 export interface ControllerWrapperOptions {
@@ -32,6 +33,7 @@ export function controllerWrapper(
 				query: req.query as Record<string, any>,
 				body: req.body as Record<string, any>,
 				params: req.params as Record<string, any>,
+				file: req.file,
 				path: req.path,
 			};
 

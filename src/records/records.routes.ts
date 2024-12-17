@@ -1,4 +1,5 @@
 import express from 'express';
+import fileUploadMiddleware from '../middlewares/fileUpload';
 import { controllerWrapper } from '../utils/controllerWrapper';
 import {
 	createRecord,
@@ -6,6 +7,7 @@ import {
 	getAllRecords,
 	getSingleRecord,
 	stopRecord,
+	updateRecord,
 } from './records.controller';
 
 const router = express.Router();
@@ -20,7 +22,11 @@ router.get('/', controllerWrapper(getAllRecords));
  * Start a new record
  * @route POST /records
  */
-router.post('/', controllerWrapper(createRecord));
+router.post(
+	'/',
+	fileUploadMiddleware.single('audio'),
+	controllerWrapper(createRecord),
+);
 
 /**
  * Get a single record
@@ -33,6 +39,12 @@ router.get('/:id', controllerWrapper(getSingleRecord));
  * @route POST /records/:id/end-record
  */
 router.post('/:id/end-record', controllerWrapper(stopRecord));
+
+/**
+ * Update a record
+ * @route PATCH /records/:id
+ */
+router.patch('/:id', controllerWrapper(updateRecord));
 
 /**
  * Delete a record

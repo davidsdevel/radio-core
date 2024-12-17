@@ -4,7 +4,8 @@ import { audioPublicDomain, tempPath } from '../config';
 import { NotFoundError } from '../errors';
 import { deleteDirectory, uploadFile } from '../files/files.repository';
 import { getDurationFromPlaylist } from '../utils/files';
-import { startRecord, stopRecord } from './records.recorder';
+import type { CreateRecordDTO, UpdateRecordDTO } from './records.dto';
+import { stopRecord } from './records.recorder';
 import {
 	createRecord,
 	deleteRecord,
@@ -27,14 +28,26 @@ export async function getSingleRecordService(id: string) {
 	return record;
 }
 
-export async function createRecordService() {
-	const createdModel = await createRecord({});
+export async function createRecordService(
+	file: Express.Multer.File,
+	data: CreateRecordDTO,
+) {
+	const createdModel = await createRecord({
+		duration: data.duration,
+	});
 
-	const tempRecordingPath = path.join(tempPath, createdModel.id);
+	const tempRecordingPath = `temp/${createdModel.id}.wav`;
 
-	await fs.mkdir(tempRecordingPath, { recursive: true });
+	console.log(tempRecordingPath, file);
 
-	startRecord(createdModel.id);
+	await uploadFile(tempRecordingPath, file.path, {
+		ContentType: file.mimetype,
+	});
+
+	await fs.unlink(file.path);
+
+	//TODO: Send processing message to Queue
+	//sendToProcessingQueue(createdModel.id);
 
 	return createdModel;
 }
@@ -79,4 +92,8 @@ export async function deleteRecordService(id: string) {
 	await deleteDirectory(id);
 
 	return removed;
+}
+
+export async function updateRecordService(id: string, body: UpdateRecordDTO) {
+	return await updateRecord({ id }, body);
 }
